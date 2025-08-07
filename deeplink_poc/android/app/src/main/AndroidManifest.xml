@@ -40,6 +40,16 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https"
                       android:host="suhaildevzft.github.io"
+                      android:pathPrefix="/poc_deeplinking/app" />
+            </intent-filter>
+            
+            <!-- Additional intent filter for root paths -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="suhaildevzft.github.io"
                       android:pathPrefix="/poc_deeplinking" />
             </intent-filter>
         </activity>

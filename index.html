@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deep Link Handler - POC</title>
+    
+    <!-- iOS Smart App Banner -->
+    <meta name="apple-itunes-app" content="app-id=6739358459, app-argument=https://suhaildevzft.github.io/poc_deeplinking/app/dashboard">
+    
+    <!-- Android App Banner -->
+    <meta name="google-play-app" content="app-id=app.slavic.customer.uat">
+    
+    <!-- Preload app links for faster redirection -->
+    <link rel="prefetch" href="deeplinkpoc://">
+    <link rel="prefetch" href="https://suhaildevzft.github.io/poc_deeplinking/app/dashboard">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -210,61 +220,70 @@
             
             // Track if user left the page (app opened)
             let appOpened = false;
+            let hasBlurred = false;
             let startTime = Date.now();
             
-            // Function to handle app detection
-            function handleAppDetection() {
-                const timeElapsed = Date.now() - startTime;
-                
-                // If user returns to browser quickly (< 1 second), app likely not installed
-                if (timeElapsed < 1000 && !appOpened) {
-                    console.log('App not installed - redirecting to store');
-                    redirectToStore(platform);
-                } else {
-                    console.log('App likely opened or user took time to decide');
-                }
-            }
-            
-            // Listen for page visibility changes
-            const visibilityHandler = function() {
-                if (document.hidden) {
-                    appOpened = true;
-                    console.log('Page hidden - app likely opened');
-                } else if (!document.hidden && !appOpened) {
-                    console.log('Page visible - checking if app opened');
-                    handleAppDetection();
-                }
-            };
-            
-            // Add event listener for visibility change
-            document.addEventListener('visibilitychange', visibilityHandler);
-            
-            // Try to open the app using Universal Link first (iOS/Android)
-            if (platform === 'ios' || platform === 'android') {
-                // Try Universal Link first
+            // For iOS, use immediate redirection without detection
+            if (platform === 'ios') {
+                // Try Universal Link immediately
                 const universalUrl = `https://suhaildevzft.github.io/poc_deeplinking/app/dashboard${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
                 window.location.href = universalUrl;
-                
-                // Fallback to custom scheme after a short delay
-                setTimeout(() => {
-                    if (!appOpened) {
-                        console.log('Trying custom scheme fallback');
-                        window.location.href = deepLinkUrl;
-                    }
-                }, 500);
-            } else {
-                // For other platforms, try custom scheme directly
-                window.location.href = deepLinkUrl;
+                return;
             }
             
-            // Final fallback to store after longer delay
+            // For Android, use a more sophisticated detection
+            if (platform === 'android') {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = deepLinkUrl;
+                document.body.appendChild(iframe);
+                
+                // Clean up iframe after attempt
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 100);
+                
+                // Try Universal Link as backup
+                setTimeout(() => {
+                    if (!hasBlurred) {
+                        const universalUrl = `https://suhaildevzft.github.io/poc_deeplinking/app/dashboard${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
+                        window.location.href = universalUrl;
+                    }
+                }, 500);
+                
+                // Final fallback to store
+                setTimeout(() => {
+                    if (!hasBlurred) {
+                        console.log('App not detected - redirecting to store');
+                        redirectToStore(platform);
+                    }
+                }, 2500);
+                
+                // Listen for blur events (app opening)
+                const blurHandler = function() {
+                    hasBlurred = true;
+                    console.log('Page blurred - app likely opened');
+                };
+                
+                window.addEventListener('blur', blurHandler);
+                window.addEventListener('pagehide', blurHandler);
+                
+                // Clean up listeners
+                setTimeout(() => {
+                    window.removeEventListener('blur', blurHandler);
+                    window.removeEventListener('pagehide', blurHandler);
+                }, 3000);
+                
+                return;
+            }
+            
+            // For other platforms, try custom scheme directly
+            window.location.href = deepLinkUrl;
+            
+            // Fallback to web after delay
             setTimeout(() => {
-                document.removeEventListener('visibilitychange', visibilityHandler);
-                if (!appOpened) {
-                    console.log('App not detected after timeout - redirecting to store');
-                    redirectToStore(platform);
-                }
-            }, 3000);
+                window.location.href = WEB_FALLBACK;
+            }, 2000);
         }
         
         // Redirect to appropriate app store
@@ -369,13 +388,13 @@
             const statusText = document.getElementById('statusText');
             
             if (isMobile()) {
-                statusText.textContent = 'Mobile platform detected. Checking app installation...';
+                statusText.textContent = 'Mobile platform detected. Attempting to open app...';
                 statusDiv.className = 'status success';
                 
-                // Auto-redirect for mobile
+                // Immediate redirect for mobile (Flipkart-like behavior)
                 setTimeout(() => {
-                    startAutoRedirect();
-                }, 1000);
+                    attemptAppOpen();
+                }, 100); // Very short delay to allow page to render
             } else {
                 // Desktop platform - auto-redirect to web fallback
                 statusDiv.className = 'status info';

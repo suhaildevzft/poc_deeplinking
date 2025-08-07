@@ -3,98 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Deep Link - POC</title>
+    <title>Opening App...</title>
+    
+    <!-- iOS Smart App Banner -->
+    <meta name="apple-itunes-app" content="app-id=6739358459, app-argument=https://suhaildevzft.github.io/poc_deeplinking/app/dashboard">
+    
+    <!-- Android App Banner -->
+    <meta name="google-play-app" content="app-id=app.slavic.customer.uat">
+    
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
             text-align: center;
-            background-color: #f5f5f5;
+            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
         }
         .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
-        .button {
-            display: inline-block;
-            background-color: #007bff;
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .fallback-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
             padding: 12px 24px;
+            border-radius: 8px;
             text-decoration: none;
-            border-radius: 5px;
+            display: inline-block;
             margin: 10px;
-            font-weight: bold;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
         }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
+        .fallback-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📱 Universal Link Endpoint</h1>
-        <p>This page handles Universal Links and App Links for the deep linking POC.</p>
+        <h1>🚀 Opening App...</h1>
+        <div class="spinner"></div>
+        <p id="status">Attempting to open the mobile app...</p>
         
-        <div class="success">
-            <h3>✅ Universal Link Working!</h3>
-            <p>If you're seeing this page, it means:</p>
-            <ul style="text-align: left;">
-                <li>The Universal/App Link was accessed correctly</li>
-                <li>The app is either not installed or verification failed</li>
-                <li>This page serves as the web fallback</li>
-            </ul>
-        </div>
-
-        <div class="container">
-            <h3>📋 URL Parameters</h3>
-            <div id="urlParams">No parameters found</div>
-        </div>
-
-        <div class="container">
-            <h3>🔧 What to do next:</h3>
-            <p>For proper Universal Link functionality:</p>
-            <ol style="text-align: left;">
-                <li><strong>Install the Flutter app</strong> on your device</li>
-                <li><strong>Verify domain ownership</strong> in app store</li>
-                <li><strong>Test again</strong> - the app should open directly</li>
-            </ol>
-            
-            <a href="https://suhaildevzft.github.io/poc_deeplinking/" class="button">🔙 Back to Main POC</a>
-            <a href="https://ww2staging.slavic401k.com/participant-portal-uat/dashboard" class="button">🌐 Web Dashboard</a>
+        <div id="fallback" style="display: none; margin-top: 30px;">
+            <p>App not installed?</p>
+            <a href="https://apps.apple.com/app/6739358459" class="fallback-btn" id="iosStore" style="display: none;">
+                📱 Download from App Store
+            </a>
+            <a href="https://play.google.com/store/apps/details?id=app.slavic.customer.uat" class="fallback-btn" id="androidStore" style="display: none;">
+                🤖 Download from Play Store
+            </a>
+            <a href="https://ww2staging.slavic401k.com/participant-portal-uat/dashboard" class="fallback-btn" target="_blank">
+                🌐 Continue in Browser
+            </a>
         </div>
     </div>
 
     <script>
-        // Parse and display URL parameters
-        function parseUrlParameters() {
+        // Immediate app opening attempt
+        function attemptAppOpen() {
+            const userAgent = navigator.userAgent.toLowerCase();
             const urlParams = new URLSearchParams(window.location.search);
-            const paramsDiv = document.getElementById('urlParams');
+            const paramString = urlParams.toString();
             
-            if (urlParams.toString()) {
-                let paramsList = '<ul style="text-align: left;">';
-                for (const [key, value] of urlParams) {
-                    paramsList += `<li><strong>${key}:</strong> ${value}</li>`;
-                }
-                paramsList += '</ul>';
-                paramsDiv.innerHTML = paramsList;
+            // Build deep link with parameters
+            const deepLinkUrl = `deeplinkpoc://example.com/dashboard${paramString ? '?' + paramString : ''}`;
+            
+            if (/iphone|ipad|ipod/.test(userAgent)) {
+                // iOS: Try custom scheme immediately
+                window.location.href = deepLinkUrl;
+                // Show iOS store option in fallback
+                setTimeout(() => {
+                    document.getElementById('iosStore').style.display = 'inline-block';
+                    document.getElementById('fallback').style.display = 'block';
+                    document.getElementById('status').textContent = 'If the app didn\'t open, please download it from the store.';
+                }, 2000);
+            } else if (/android/.test(userAgent)) {
+                // Android: Try intent first, then custom scheme
+                const intent = `intent://example.com/dashboard${paramString ? '?' + paramString : ''}#Intent;scheme=deeplinkpoc;package=app.slavic.customer.uat;end`;
+                window.location.href = intent;
+                
+                // Fallback to custom scheme
+                setTimeout(() => {
+                    window.location.href = deepLinkUrl;
+                }, 500);
+                
+                // Show Android store option in fallback
+                setTimeout(() => {
+                    document.getElementById('androidStore').style.display = 'inline-block';
+                    document.getElementById('fallback').style.display = 'block';
+                    document.getElementById('status').textContent = 'If the app didn\'t open, please download it from the store.';
+                }, 2000);
             } else {
-                paramsDiv.textContent = 'No parameters found';
+                // Desktop: redirect to web
+                setTimeout(() => {
+                    window.location.href = 'https://ww2staging.slavic401k.com/participant-portal-uat/dashboard';
+                }, 1000);
             }
         }
 
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', parseUrlParameters);
+        // Run immediately when page loads
+        attemptAppOpen();
     </script>
 </body>
 </html>

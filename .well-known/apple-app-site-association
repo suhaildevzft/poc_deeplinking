@@ -3,11 +3,20 @@
     "apps": [],
     "details": [
       {
-        "appID": "3NH3GRYU53.app.slavic.customer.uat",
-        "paths": [ 
-          "/poc_deeplinking/app/*",
-          "/poc_deeplinking/deeplink/*",
-          "/poc_deeplinking/?*"
+        "appIDs": ["3NH3GRYU53.app.slavic.customer.uat"],
+        "components": [
+          {
+            "/": "/poc_deeplinking/app/*",
+            "comment": "Matches any URL with path that starts with /poc_deeplinking/app/"
+          },
+          {
+            "/": "/poc_deeplinking/deeplink/*",
+            "comment": "Matches any URL with path that starts with /poc_deeplinking/deeplink/"
+          },
+          {
+            "/": "/poc_deeplinking/?*",
+            "comment": "Matches any URL with path that starts with /poc_deeplinking/ and has query parameters"
+          }
         ]
       }
     ]

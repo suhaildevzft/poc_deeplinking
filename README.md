@@ -193,7 +193,7 @@ The app is configured in `ios/Runner/Info.plist` with:
 ### Deep Links Not Working
 1. Check app is properly installed
 2. Verify scheme configuration in platform files
-3. Test with `adb` on Android: `adb shell am start -W -a android.intent.action.VIEW -d "deeplinkpoc://test" com.example.deeplink_poc`
+3. Test with `adb` on Android: `adb shell am start -W -a android.intent.action.VIEW -d "deeplinkpoc://test" app.slavic.customer.uat`
 
 ### Website Not Loading
 1. Ensure Python server is running

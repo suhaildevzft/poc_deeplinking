@@ -99,28 +99,54 @@ class _MyHomePageState extends State<MyHomePage> {
     // Parse the link and extract parameters if needed
     Uri uri = Uri.parse(link);
     
-    // Show a dialog or navigate to a specific screen based on the link
+    // Log the received link for debugging
+    print('Deep link received: $link');
+    print('Host: ${uri.host}, Path: ${uri.path}');
+    print('Query parameters: ${uri.queryParameters}');
+    
+    // Show a success dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Deep Link Received'),
+          title: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.green),
+              SizedBox(width: 8),
+              Text('Deep Link Success!'),
+            ],
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Link: $link'),
+              const Text(
+                '🎉 App opened successfully via deep link!',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 10),
-              Text('Host: ${uri.host}'),
-              Text('Path: ${uri.path}'),
-              if (uri.queryParameters.isNotEmpty)
-                Text('Parameters: ${uri.queryParameters}'),
+              const Divider(),
+              const SizedBox(height: 10),
+              Text('🔗 URL: $link'),
+              const SizedBox(height: 5),
+              Text('🏠 Host: ${uri.host}'),
+              Text('📁 Path: ${uri.path}'),
+              if (uri.queryParameters.isNotEmpty) ...[
+                const SizedBox(height: 5),
+                const Text('📋 Parameters:', style: TextStyle(fontWeight: FontWeight.bold)),
+                ...uri.queryParameters.entries.map((entry) => 
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Text('• ${entry.key}: ${entry.value}'),
+                  )
+                ),
+              ],
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
+              child: const Text('Great!'),
             ),
           ],
         );
