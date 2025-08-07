@@ -3,7 +3,7 @@
     "apps": [],
     "details": [
       {
-        "appID": "TEAMID.com.example.deeplinkpoc",
+        "appID": "3NH3GRYU53.app.slavic.customer.uat",
         "paths": [ 
           "/poc_deeplinking/app/*",
           "/poc_deeplinking/deeplink/*",
