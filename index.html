@@ -148,29 +148,27 @@
             
             <!-- iOS Troubleshooting -->
             <div style="margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background: #f8f9fa;">
-                <h4 style="margin-top: 0; color: #333;">🍎 iOS Deep Linking Troubleshooting</h4>
+                <h4 style="margin-top: 0; color: #333;">🍎 iOS Deep Linking Instructions</h4>
                 <div style="text-align: left;">
-                    <p><strong>If the app is not opening on iOS:</strong></p>
+                    <p><strong>✅ Your deep linking is working!</strong></p>
+                    <p>When you see the "Open this page in 'Deeplink Poc'?" prompt:</p>
                     <ol style="margin: 10px 0;">
-                        <li>Ensure the Flutter app is installed on your iOS device</li>
-                        <li>Check that the app has the correct URL scheme: <code>deeplinkpoc</code></li>
-                        <li>Try manually opening: <code>deeplinkpoc://example.com/dashboard</code> in Safari</li>
-                        <li>Test from Safari browser (not Chrome or other browsers)</li>
-                        <li>Make sure iOS version supports the deep linking method</li>
+                        <li><strong>Tap "Open"</strong> - This will launch your Flutter app</li>
+                        <li>iOS will remember your choice for future visits</li>
+                        <li>The app should open and show the deep link data</li>
                     </ol>
+                    
+                    <p><strong>For direct opening without prompts:</strong></p>
+                    <ul style="margin: 10px 0;">
+                        <li>Consider implementing Universal Links for production</li>
+                        <li>Or tap "Open" once to train iOS to remember your preference</li>
+                    </ul>
                     
                     <p><strong>Test URLs to try manually in Safari:</strong></p>
                     <ul style="margin: 10px 0;">
                         <li><code>deeplinkpoc://</code></li>
                         <li><code>deeplinkpoc://example.com</code></li>
                         <li><code>deeplinkpoc://example.com/dashboard</code></li>
-                    </ul>
-                    
-                    <p><strong>Expected behavior:</strong></p>
-                    <ul style="margin: 10px 0;">
-                        <li>✅ App opens: Deep link working correctly</li>
-                        <li>❌ "Cannot Open Page" error: App not installed or scheme not configured</li>
-                        <li>❌ Nothing happens: Scheme might be blocked or browser issue</li>
                     </ul>
                 </div>
             </div>
@@ -401,13 +399,11 @@
             const statusText = document.getElementById('statusText');
             
             if (isMobile()) {
-                statusText.textContent = 'Mobile platform detected. Preparing app launch...';
+                statusText.textContent = 'Mobile platform detected. Ready to test app launch.';
                 statusDiv.className = 'status success';
                 
-                // Auto-redirect for mobile
-                setTimeout(() => {
-                    startAutoRedirect();
-                }, 1000);
+                // Show manual actions instead of auto-redirect for better iOS experience
+                showManualActions();
             } else {
                 // Desktop platform - auto-redirect to web fallback
                 statusDiv.className = 'status info';
