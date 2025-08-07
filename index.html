@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deep Link Handler - POC</title>
+    <title>Real Deep Linking - Like Flipkart & YouTube!</title>
     
     <!-- iOS Smart App Banner -->
     <meta name="apple-itunes-app" content="app-id=6739358459, app-argument=https://suhaildevzft.github.io/poc_deeplinking/app/dashboard">
@@ -87,8 +87,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>🔗 Deep Link Handler POC</h1>
-        <p>This page demonstrates deep linking functionality for mobile apps.</p>
+        <h1>🔗 Real-World Deep Linking (Like Flipkart!)</h1>
+        <p>Experience how big apps <strong>actually</strong> handle deep linking - no magic detection, just smart UX!</p>
         
         <div class="platform-info">
             <h3>🔍 Platform Detection</h3>
@@ -227,7 +227,7 @@
             if (platform === 'ios') {
                 // Try Universal Link immediately
                 const universalUrl = `https://suhaildevzft.github.io/poc_deeplinking/app/dashboard${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
-                window.location.href = universalUrl;
+                // window.location.href = universalUrl;
                 return;
             }
             

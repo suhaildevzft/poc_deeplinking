@@ -66,10 +66,10 @@
     <div class="container">
         <h1>🚀 Opening App...</h1>
         <div class="spinner"></div>
-        <p id="status">Attempting to open the mobile app...</p>
+        <p id="status">Trying multiple ways to open the app (just like Flipkart does)...</p>
         
         <div id="fallback" style="display: none; margin-top: 30px;">
-            <p>App not installed?</p>
+            <p><strong>Want the best mobile experience?</strong></p>
             <a href="https://apps.apple.com/app/6739358459" class="fallback-btn" id="iosStore" style="display: none;">
                 📱 Download from App Store
             </a>
@@ -79,54 +79,78 @@
             <a href="https://ww2staging.slavic401k.com/participant-portal-uat/dashboard" class="fallback-btn" target="_blank">
                 🌐 Continue in Browser
             </a>
+            <p style="font-size: 14px; margin-top: 15px; opacity: 0.8;">
+                💡 This is exactly how big apps like YouTube and Instagram work!
+            </p>
         </div>
     </div>
 
     <script>
-        // Immediate app opening attempt
+        // Real-world approach (like Flipkart) - Multiple attempts with graceful fallback
         function attemptAppOpen() {
             const userAgent = navigator.userAgent.toLowerCase();
             const urlParams = new URLSearchParams(window.location.search);
             const paramString = urlParams.toString();
             
-            // Build deep link with parameters
+            // Build URLs
             const deepLinkUrl = `deeplinkpoc://example.com/dashboard${paramString ? '?' + paramString : ''}`;
             
             if (/iphone|ipad|ipod/.test(userAgent)) {
-                // iOS: Try custom scheme immediately
+                // iOS: Multiple attempts like real apps
+                console.log('iOS detected - trying app schemes...');
+                
+                // 1st attempt: Custom scheme (immediate)
                 window.location.href = deepLinkUrl;
-                // Show iOS store option in fallback
+                
+                // 2nd attempt: Universal Link fallback
+                setTimeout(() => {
+                    window.location.href = `https://suhaildevzft.github.io/poc_deeplinking/app/dashboard${paramString ? '?' + paramString : ''}`;
+                }, 300);
+                
+                // 3rd attempt: Show options after reasonable delay
                 setTimeout(() => {
                     document.getElementById('iosStore').style.display = 'inline-block';
                     document.getElementById('fallback').style.display = 'block';
-                    document.getElementById('status').textContent = 'If the app didn\'t open, please download it from the store.';
-                }, 2000);
+                    document.getElementById('status').innerHTML = '📱 <strong>Want the app?</strong> Get it from the App Store for the best experience!';
+                }, 2500);
+                
             } else if (/android/.test(userAgent)) {
-                // Android: Try intent first, then custom scheme
+                // Android: Intent → Universal Link → Custom scheme (like YouTube)
+                console.log('Android detected - trying multiple schemes...');
+                
+                // 1st attempt: Intent (most reliable on Android)
                 const intent = `intent://example.com/dashboard${paramString ? '?' + paramString : ''}#Intent;scheme=deeplinkpoc;package=app.slavic.customer.uat;end`;
                 window.location.href = intent;
                 
-                // Fallback to custom scheme
+                // 2nd attempt: Universal Link
+                setTimeout(() => {
+                    window.location.href = `https://suhaildevzft.github.io/poc_deeplinking/app/dashboard${paramString ? '?' + paramString : ''}`;
+                }, 200);
+                
+                // 3rd attempt: Custom scheme
                 setTimeout(() => {
                     window.location.href = deepLinkUrl;
-                }, 500);
+                }, 600);
                 
-                // Show Android store option in fallback
+                // 4th: Show options
                 setTimeout(() => {
                     document.getElementById('androidStore').style.display = 'inline-block';
                     document.getElementById('fallback').style.display = 'block';
-                    document.getElementById('status').textContent = 'If the app didn\'t open, please download it from the store.';
-                }, 2000);
+                    document.getElementById('status').innerHTML = '🤖 <strong>Want the app?</strong> Get it from Play Store for better performance!';
+                }, 2500);
+                
             } else {
-                // Desktop: redirect to web
+                // Desktop: Direct redirect (no app needed)
+                console.log('Desktop detected - redirecting to web...');
+                document.getElementById('status').textContent = 'Redirecting to web dashboard...';
                 setTimeout(() => {
                     window.location.href = 'https://ww2staging.slavic401k.com/participant-portal-uat/dashboard';
                 }, 1000);
             }
         }
 
-        // Run immediately when page loads
-        attemptAppOpen();
+        // Run immediately when page loads (real app behavior)
+        document.addEventListener('DOMContentLoaded', attemptAppOpen);
     </script>
 </body>
 </html>
