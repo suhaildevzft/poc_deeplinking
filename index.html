@@ -127,6 +127,16 @@
         </div>
 
         <div class="container" style="margin-top: 30px;">
+            <h3>🔧 iOS Deep Link Testing</h3>
+            <p style="font-size: 14px; color: #666;">For iOS devices only:</p>
+            
+            <button onclick="testIOSDeepLink()" class="button">🍎 Test iOS Deep Link</button>
+            <button onclick="testIOSWithParams()" class="button">🍎 Test with Parameters</button>
+            
+            <div id="iosTestResult" style="margin-top: 10px; padding: 10px; border-radius: 5px; display: none;"></div>
+        </div>
+
+        <div class="container" style="margin-top: 30px;">
             <h3>📋 URL Parameters</h3>
             <div id="urlParams">No parameters found</div>
         </div>
@@ -135,6 +145,35 @@
             <p>🔗 <strong>GitHub Pages URL:</strong> <span id="currentUrl"></span></p>
             <p>📱 <strong>QR Code:</strong> Scan with mobile device to test deep linking</p>
             <div id="qrCode" style="margin: 15px 0;"></div>
+            
+            <!-- iOS Troubleshooting -->
+            <div style="margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background: #f8f9fa;">
+                <h4 style="margin-top: 0; color: #333;">🍎 iOS Deep Linking Troubleshooting</h4>
+                <div style="text-align: left;">
+                    <p><strong>If the app is not opening on iOS:</strong></p>
+                    <ol style="margin: 10px 0;">
+                        <li>Ensure the Flutter app is installed on your iOS device</li>
+                        <li>Check that the app has the correct URL scheme: <code>deeplinkpoc</code></li>
+                        <li>Try manually opening: <code>deeplinkpoc://example.com/dashboard</code> in Safari</li>
+                        <li>Test from Safari browser (not Chrome or other browsers)</li>
+                        <li>Make sure iOS version supports the deep linking method</li>
+                    </ol>
+                    
+                    <p><strong>Test URLs to try manually in Safari:</strong></p>
+                    <ul style="margin: 10px 0;">
+                        <li><code>deeplinkpoc://</code></li>
+                        <li><code>deeplinkpoc://example.com</code></li>
+                        <li><code>deeplinkpoc://example.com/dashboard</code></li>
+                    </ul>
+                    
+                    <p><strong>Expected behavior:</strong></p>
+                    <ul style="margin: 10px 0;">
+                        <li>✅ App opens: Deep link working correctly</li>
+                        <li>❌ "Cannot Open Page" error: App not installed or scheme not configured</li>
+                        <li>❌ Nothing happens: Scheme might be blocked or browser issue</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -208,14 +247,68 @@
                 deepLinkUrl += '?' + urlParams.toString();
             }
             
-            // Try to open the app
+            console.log('Attempting to open:', deepLinkUrl);
+            
+            // For iOS, we need a more sophisticated approach
+            if (platform === 'ios') {
+                attemptIOSAppOpen(deepLinkUrl);
+            } else if (platform === 'android') {
+                attemptAndroidAppOpen(deepLinkUrl);
+            } else {
+                // Fallback for other platforms
+                window.location.href = deepLinkUrl;
+            }
+        }
+
+        // iOS-specific app opening logic
+        function attemptIOSAppOpen(deepLinkUrl) {
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            
+            // Try to open the app using iframe method
+            iframe.src = deepLinkUrl;
+            document.body.appendChild(iframe);
+            
+            // Clean up iframe after a short delay
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+            }, 100);
+            
+            // If app doesn't open, redirect to App Store after delay
+            const startTime = Date.now();
+            const timeout = setTimeout(() => {
+                // Check if we're still on the page (app didn't open)
+                if (Date.now() - startTime > 1500) {
+                    console.log('App not found, redirecting to App Store');
+                    window.location.href = IOS_APP_STORE;
+                }
+            }, 2000);
+            
+            // Clear timeout if page becomes hidden (app opened)
+            const handleVisibilityChange = () => {
+                if (document.hidden) {
+                    clearTimeout(timeout);
+                    console.log('App opened successfully');
+                }
+            };
+            
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            
+            // Clean up event listener after timeout
+            setTimeout(() => {
+                document.removeEventListener('visibilitychange', handleVisibilityChange);
+            }, 3000);
+        }
+
+        // Android-specific app opening logic
+        function attemptAndroidAppOpen(deepLinkUrl) {
+            // Try to open the app directly
             window.location.href = deepLinkUrl;
             
-            // Fallback to app store after a delay
+            // Fallback to Play Store after a delay
             setTimeout(() => {
-                if (platform === 'ios') {
-                    window.location.href = IOS_APP_STORE;
-                } else if (platform === 'android') {
+                if (!document.hidden) {
+                    console.log('App not found, redirecting to Play Store');
                     window.location.href = ANDROID_PLAY_STORE;
                 }
             }, 2000);
@@ -338,6 +431,35 @@
                         </div>
                     `;
                 }
+            }
+        }
+
+        // iOS-specific testing functions
+        function testIOSDeepLink() {
+            const resultDiv = document.getElementById('iosTestResult');
+            resultDiv.style.display = 'block';
+            resultDiv.style.backgroundColor = '#fff3cd';
+            resultDiv.style.color = '#856404';
+            resultDiv.innerHTML = '🍎 Testing iOS deep link: deeplinkpoc://example.com/dashboard';
+            
+            if (detectPlatform() === 'ios') {
+                attemptIOSAppOpen('deeplinkpoc://example.com/dashboard');
+            } else {
+                resultDiv.innerHTML = '⚠️ This test is for iOS devices only. Current platform: ' + detectPlatform();
+            }
+        }
+
+        function testIOSWithParams() {
+            const resultDiv = document.getElementById('iosTestResult');
+            resultDiv.style.display = 'block';
+            resultDiv.style.backgroundColor = '#d1ecf1';
+            resultDiv.style.color = '#0c5460';
+            resultDiv.innerHTML = '🍎 Testing iOS deep link with parameters: deeplinkpoc://example.com/dashboard?test=123&source=ios';
+            
+            if (detectPlatform() === 'ios') {
+                attemptIOSAppOpen('deeplinkpoc://example.com/dashboard?test=123&source=ios');
+            } else {
+                resultDiv.innerHTML = '⚠️ This test is for iOS devices only. Current platform: ' + detectPlatform();
             }
         }
 
