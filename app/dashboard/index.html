@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Deep Link - POC</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Universal Link Endpoint</h1>
+        <p>This page handles Universal Links and App Links for the deep linking POC.</p>
+        
+        <div class="success">
+            <h3>✅ Universal Link Working!</h3>
+            <p>If you're seeing this page, it means:</p>
+            <ul style="text-align: left;">
+                <li>The Universal/App Link was accessed correctly</li>
+                <li>The app is either not installed or verification failed</li>
+                <li>This page serves as the web fallback</li>
+            </ul>
+        </div>
+
+        <div class="container">
+            <h3>📋 URL Parameters</h3>
+            <div id="urlParams">No parameters found</div>
+        </div>
+
+        <div class="container">
+            <h3>🔧 What to do next:</h3>
+            <p>For proper Universal Link functionality:</p>
+            <ol style="text-align: left;">
+                <li><strong>Install the Flutter app</strong> on your device</li>
+                <li><strong>Verify domain ownership</strong> in app store</li>
+                <li><strong>Test again</strong> - the app should open directly</li>
+            </ol>
+            
+            <a href="https://suhaildevzft.github.io/poc_deeplinking/" class="button">🔙 Back to Main POC</a>
+            <a href="https://ww2staging.slavic401k.com/participant-portal-uat/dashboard" class="button">🌐 Web Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        // Parse and display URL parameters
+        function parseUrlParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paramsDiv = document.getElementById('urlParams');
+            
+            if (urlParams.toString()) {
+                let paramsList = '<ul style="text-align: left;">';
+                for (const [key, value] of urlParams) {
+                    paramsList += `<li><strong>${key}:</strong> ${value}</li>`;
+                }
+                paramsList += '</ul>';
+                paramsDiv.innerHTML = paramsList;
+            } else {
+                paramsDiv.textContent = 'No parameters found';
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', parseUrlParameters);
+    </script>
+</body>
+</html>

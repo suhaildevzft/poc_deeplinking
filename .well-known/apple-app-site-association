@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TEAMID.com.example.deeplinkpoc",
+        "paths": [ 
+          "/poc_deeplinking/app/*",
+          "/poc_deeplinking/deeplink/*",
+          "/poc_deeplinking/?*"
+        ]
+      }
+    ]
+  }
+}
