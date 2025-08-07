@@ -87,7 +87,7 @@
         </div>
 
         <div id="status" class="status info">
-            <span id="statusText">Analyzing platform and preparing deep link...</span>
+            <span id="statusText">Analyzing platform and checking app installation...</span>
         </div>
 
         <div id="actions" style="display: none;">
@@ -119,7 +119,7 @@
             <a href="deeplinkpoc://example.com/dashboard?userId=123&source=website" 
                class="button">Test Custom Scheme</a>
             
-            <a href="https://your-domain.com/app/dashboard?userId=123&source=website" 
+            <a href="https://suhaildevzft.github.io/poc_deeplinking/app/dashboard?userId=123&source=website" 
                class="button">Test Universal Link</a>
             
             <a href="https://ww2staging.slavic401k.com/participant-portal-uat/dashboard" 
@@ -166,9 +166,9 @@
 
         // Deep link URLs
         const DEEP_LINK_SCHEME = 'deeplinkpoc://example.com/dashboard';
-        const UNIVERSAL_LINK = 'https://your-domain.com/app/dashboard';
+        const UNIVERSAL_LINK = 'https://suhaildevzft.github.io/poc_deeplinking/app/dashboard';
         const IOS_APP_STORE = 'https://apps.apple.com/app/6739358459';
-        const ANDROID_PLAY_STORE = 'https://play.google.com/store/apps/details?id=app.slavic401k.mobileapp.participant';
+        const ANDROID_PLAY_STORE = 'https://play.google.com/store/apps/details?id=app.slavic.customer.uat';
         const WEB_FALLBACK = 'https://ww2staging.slavic401k.com/participant-portal-uat/dashboard';
 
         // Update UI with platform information
@@ -197,7 +197,7 @@
             }
         }
 
-        // Attempt to open the app
+        // Check if app is installed and attempt to open it
         function attemptAppOpen() {
             const platform = detectPlatform();
             let deepLinkUrl = DEEP_LINK_SCHEME;
@@ -208,17 +208,75 @@
                 deepLinkUrl += '?' + urlParams.toString();
             }
             
-            // Try to open the app
-            window.location.href = deepLinkUrl;
+            // Track if user left the page (app opened)
+            let appOpened = false;
+            let startTime = Date.now();
             
-            // Fallback to app store after a delay
-            setTimeout(() => {
-                if (platform === 'ios') {
-                    window.location.href = IOS_APP_STORE;
-                } else if (platform === 'android') {
-                    window.location.href = ANDROID_PLAY_STORE;
+            // Function to handle app detection
+            function handleAppDetection() {
+                const timeElapsed = Date.now() - startTime;
+                
+                // If user returns to browser quickly (< 1 second), app likely not installed
+                if (timeElapsed < 1000 && !appOpened) {
+                    console.log('App not installed - redirecting to store');
+                    redirectToStore(platform);
+                } else {
+                    console.log('App likely opened or user took time to decide');
                 }
-            }, 2000);
+            }
+            
+            // Listen for page visibility changes
+            const visibilityHandler = function() {
+                if (document.hidden) {
+                    appOpened = true;
+                    console.log('Page hidden - app likely opened');
+                } else if (!document.hidden && !appOpened) {
+                    console.log('Page visible - checking if app opened');
+                    handleAppDetection();
+                }
+            };
+            
+            // Add event listener for visibility change
+            document.addEventListener('visibilitychange', visibilityHandler);
+            
+            // Try to open the app using Universal Link first (iOS/Android)
+            if (platform === 'ios' || platform === 'android') {
+                // Try Universal Link first
+                const universalUrl = `https://suhaildevzft.github.io/poc_deeplinking/app/dashboard${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
+                window.location.href = universalUrl;
+                
+                // Fallback to custom scheme after a short delay
+                setTimeout(() => {
+                    if (!appOpened) {
+                        console.log('Trying custom scheme fallback');
+                        window.location.href = deepLinkUrl;
+                    }
+                }, 500);
+            } else {
+                // For other platforms, try custom scheme directly
+                window.location.href = deepLinkUrl;
+            }
+            
+            // Final fallback to store after longer delay
+            setTimeout(() => {
+                document.removeEventListener('visibilitychange', visibilityHandler);
+                if (!appOpened) {
+                    console.log('App not detected after timeout - redirecting to store');
+                    redirectToStore(platform);
+                }
+            }, 3000);
+        }
+        
+        // Redirect to appropriate app store
+        function redirectToStore(platform) {
+            if (platform === 'ios') {
+                window.location.href = IOS_APP_STORE;
+            } else if (platform === 'android') {
+                window.location.href = ANDROID_PLAY_STORE;
+            } else {
+                // For desktop, redirect to web fallback
+                window.location.href = WEB_FALLBACK;
+            }
         }
 
         // Auto-redirect countdown
@@ -226,8 +284,10 @@
             let countdown = 3;
             const countdownElement = document.getElementById('countdown');
             const autoRedirectDiv = document.getElementById('autoRedirect');
+            const statusText = document.getElementById('statusText');
             
             autoRedirectDiv.style.display = 'block';
+            statusText.textContent = 'Checking if app is installed and preparing smart redirect...';
             
             const timer = setInterval(() => {
                 countdown--;
@@ -235,6 +295,7 @@
                 
                 if (countdown <= 0) {
                     clearInterval(timer);
+                    statusText.textContent = 'Attempting to open app...';
                     attemptAppOpen();
                 }
             }, 1000);
@@ -308,7 +369,7 @@
             const statusText = document.getElementById('statusText');
             
             if (isMobile()) {
-                statusText.textContent = 'Mobile platform detected. Preparing app launch...';
+                statusText.textContent = 'Mobile platform detected. Checking app installation...';
                 statusDiv.className = 'status success';
                 
                 // Auto-redirect for mobile
@@ -344,10 +405,10 @@
         // Run when page loads
         document.addEventListener('DOMContentLoaded', initialize);
 
-        // Handle page visibility change (for detecting app switch)
+        // Global visibility change handler (for general logging)
         document.addEventListener('visibilitychange', function() {
             if (document.hidden) {
-                console.log('Page hidden - app might have opened');
+                console.log('Page hidden - user may have switched to app');
             } else {
                 console.log('Page visible - user returned to browser');
             }
