@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Link Test Console</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1rem;
+            line-height: 1.6;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .test-card {
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 1rem;
+            background: #f8f9fa;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            background: #0066cc;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: #0052a3;
+        }
+        
+        .btn.danger {
+            background: #dc3545;
+        }
+        
+        .btn.success {
+            background: #28a745;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-indicator.online {
+            background: #28a745;
+        }
+        
+        .status-indicator.offline {
+            background: #dc3545;
+        }
+        
+        .code-block {
+            background: #f1f3f4;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .log-entry {
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+        
+        .log-entry.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .log-entry.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .log-entry.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        #logs {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 1rem;
+            background: white;
+        }
+        
+        .form-group {
+            margin: 1rem 0;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Deep Link Test Console</h1>
+        <p>Comprehensive testing suite for deep link functionality</p>
+    </div>
+    
+    <div class="section">
+        <h2>📊 System Status</h2>
+        <div class="test-grid">
+            <div class="test-card">
+                <h4><span class="status-indicator" id="https-status"></span>HTTPS Status</h4>
+                <p id="https-text">Checking...</p>
+            </div>
+            <div class="test-card">
+                <h4><span class="status-indicator" id="platform-status"></span>Platform</h4>
+                <p id="platform-text">Detecting...</p>
+            </div>
+            <div class="test-card">
+                <h4><span class="status-indicator" id="browser-status"></span>Browser</h4>
+                <p id="browser-text">Identifying...</p>
+            </div>
+            <div class="test-card">
+                <h4><span class="status-indicator" id="deeplink-support-status"></span>Deep Link Support</h4>
+                <p id="deeplink-support-text">Testing...</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>🔗 Quick Tests</h2>
+        <div class="test-grid">
+            <div class="test-card">
+                <h4>Basic Deep Link</h4>
+                <a href="./index.html" class="btn">Test Basic Link</a>
+                <button onclick="testCustomScheme('deeplinkpoc://example.com/dashboard')" class="btn">Direct Scheme</button>
+            </div>
+            <div class="test-card">
+                <h4>With Parameters</h4>
+                <a href="./index.html?path=dashboard&userId=123&token=abc" class="btn">Test with Params</a>
+                <button onclick="testCustomScheme('deeplinkpoc://example.com/dashboard?userId=123')" class="btn">Direct with Params</button>
+            </div>
+            <div class="test-card">
+                <h4>Universal Links</h4>
+                <a href="https://suhaildevzft.github.io/poc_deeplinking/app/dashboard" class="btn">Test Universal Link</a>
+                <button onclick="testUniversalLink()" class="btn">Force Universal</button>
+            </div>
+            <div class="test-card">
+                <h4>Error Cases</h4>
+                <button onclick="testInvalidScheme()" class="btn danger">Invalid Scheme</button>
+                <button onclick="testTimeout()" class="btn danger">Timeout Test</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>⚙️ Custom Test</h2>
+        <div class="form-group">
+            <label for="custom-scheme">Custom Deep Link URL:</label>
+            <input type="text" id="custom-scheme" value="deeplinkpoc://example.com/dashboard" placeholder="Enter custom URL">
+        </div>
+        <div class="form-group">
+            <label for="custom-params">Additional Parameters (JSON):</label>
+            <input type="text" id="custom-params" value='{"userId":"123","token":"abc"}' placeholder='{"key":"value"}'>
+        </div>
+        <button onclick="testCustomUrl()" class="btn success">Test Custom URL</button>
+        <button onclick="generateWebLink()" class="btn">Generate Web Link</button>
+    </div>
+    
+    <div class="section">
+        <h2>📝 Test Logs</h2>
+        <button onclick="clearLogs()" class="btn">Clear Logs</button>
+        <button onclick="exportLogs()" class="btn">Export Logs</button>
+        <div id="logs"></div>
+    </div>
+    
+    <div class="section">
+        <h2>📋 Test Checklist</h2>
+        <div class="test-grid">
+            <div class="test-card">
+                <h4>iOS Tests</h4>
+                <ul>
+                    <li><input type="checkbox" id="ios-safari"> Safari (app installed)</li>
+                    <li><input type="checkbox" id="ios-safari-no-app"> Safari (app not installed)</li>
+                    <li><input type="checkbox" id="ios-chrome"> Chrome (app installed)</li>
+                    <li><input type="checkbox" id="ios-chrome-no-app"> Chrome (app not installed)</li>
+                    <li><input type="checkbox" id="ios-universal"> Universal links</li>
+                    <li><input type="checkbox" id="ios-smart-banner"> Smart app banner</li>
+                </ul>
+            </div>
+            <div class="test-card">
+                <h4>Android Tests</h4>
+                <ul>
+                    <li><input type="checkbox" id="android-chrome"> Chrome (app installed)</li>
+                    <li><input type="checkbox" id="android-chrome-no-app"> Chrome (app not installed)</li>
+                    <li><input type="checkbox" id="android-firefox"> Firefox (app installed)</li>
+                    <li><input type="checkbox" id="android-intent"> Intent filters</li>
+                    <li><input type="checkbox" id="android-universal"> Universal links</li>
+                    <li><input type="checkbox" id="android-fallback"> Play Store fallback</li>
+                </ul>
+            </div>
+            <div class="test-card">
+                <h4>Edge Cases</h4>
+                <ul>
+                    <li><input type="checkbox" id="slow-network"> Slow network</li>
+                    <li><input type="checkbox" id="app-backgrounded"> App backgrounded</li>
+                    <li><input type="checkbox" id="multiple-apps"> Multiple apps with same scheme</li>
+                    <li><input type="checkbox" id="app-updating"> App updating</li>
+                    <li><input type="checkbox" id="desktop-browser"> Desktop browser</li>
+                    <li><input type="checkbox" id="incognito"> Incognito/private mode</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Logging system
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logsContainer = document.getElementById('logs');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logsContainer.appendChild(logEntry);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+            
+            // Also log to console
+            console.log(`[DeepLink Test] ${message}`);
+        }
+        
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+            log('Logs cleared', 'info');
+        }
+        
+        function exportLogs() {
+            const logs = document.getElementById('logs').innerText;
+            const blob = new Blob([logs], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `deeplink-test-logs-${new Date().toISOString().slice(0,19)}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            log('Logs exported', 'success');
+        }
+        
+        // System detection
+        function detectPlatform() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return 'iOS';
+            } else if (/android/i.test(userAgent)) {
+                return 'Android';
+            } else if (/Windows/.test(userAgent)) {
+                return 'Windows';
+            } else if (/Mac/.test(userAgent)) {
+                return 'macOS';
+            } else if (/Linux/.test(userAgent)) {
+                return 'Linux';
+            } else {
+                return 'Unknown';
+            }
+        }
+        
+        function detectBrowser() {
+            const userAgent = navigator.userAgent;
+            
+            if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) {
+                return 'Chrome';
+            } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+                return 'Safari';
+            } else if (userAgent.includes('Firefox')) {
+                return 'Firefox';
+            } else if (userAgent.includes('Edg')) {
+                return 'Edge';
+            } else {
+                return 'Unknown';
+            }
+        }
+        
+        // Test functions
+        function testCustomScheme(url) {
+            log(`Testing custom scheme: ${url}`, 'info');
+            
+            const startTime = Date.now();
+            let appOpened = false;
+            
+            // Create hidden iframe to trigger the deep link
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = url;
+            document.body.appendChild(iframe);
+            
+            // Listen for visibility changes
+            const handleVisibilityChange = () => {
+                if (document.hidden) {
+                    appOpened = true;
+                    log('App opened successfully (visibility change detected)', 'success');
+                    cleanup();
+                }
+            };
+            
+            // Set timeout
+            const timeout = setTimeout(() => {
+                if (!appOpened) {
+                    log('App did not open within timeout period', 'error');
+                }
+                cleanup();
+            }, 3000);
+            
+            // Cleanup function
+            function cleanup() {
+                clearTimeout(timeout);
+                document.removeEventListener('visibilitychange', handleVisibilityChange);
+                if (iframe.parentNode) {
+                    iframe.parentNode.removeChild(iframe);
+                }
+            }
+            
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            
+            // Try direct navigation as fallback
+            setTimeout(() => {
+                if (!appOpened) {
+                    try {
+                        window.location.href = url;
+                        log('Attempted direct navigation', 'info');
+                    } catch (e) {
+                        log(`Direct navigation failed: ${e.message}`, 'error');
+                    }
+                }
+            }, 1000);
+        }
+        
+        function testUniversalLink() {
+            const universalUrl = 'https://suhaildevzft.github.io/poc_deeplinking/app/dashboard';
+            log(`Testing universal link: ${universalUrl}`, 'info');
+            window.location.href = universalUrl;
+        }
+        
+        function testInvalidScheme() {
+            const invalidUrl = 'invalid-scheme://test';
+            log(`Testing invalid scheme: ${invalidUrl}`, 'info');
+            testCustomScheme(invalidUrl);
+        }
+        
+        function testTimeout() {
+            log('Testing timeout scenario (fake long delay)', 'info');
+            const url = 'deeplinkpoc://example.com/timeout-test';
+            
+            // Simulate a scenario where the app doesn't respond
+            setTimeout(() => {
+                log('Simulated timeout completed', 'error');
+            }, 5000);
+            
+            testCustomScheme(url);
+        }
+        
+        function testCustomUrl() {
+            const customUrl = document.getElementById('custom-scheme').value;
+            const customParams = document.getElementById('custom-params').value;
+            
+            let finalUrl = customUrl;
+            
+            try {
+                if (customParams) {
+                    const params = JSON.parse(customParams);
+                    const urlObj = new URL(customUrl);
+                    Object.keys(params).forEach(key => {
+                        urlObj.searchParams.set(key, params[key]);
+                    });
+                    finalUrl = urlObj.toString();
+                }
+            } catch (e) {
+                log(`Invalid JSON parameters: ${e.message}`, 'error');
+                return;
+            }
+            
+            log(`Testing custom URL: ${finalUrl}`, 'info');
+            testCustomScheme(finalUrl);
+        }
+        
+        function generateWebLink() {
+            const customUrl = document.getElementById('custom-scheme').value;
+            const customParams = document.getElementById('custom-params').value;
+            
+            // Extract path and params from custom URL
+            try {
+                const urlObj = new URL(customUrl);
+                const path = urlObj.pathname.substring(1); // Remove leading slash
+                
+                let webUrl = `${window.location.origin}/index.html?path=${encodeURIComponent(path)}`;
+                
+                // Add existing query params
+                urlObj.searchParams.forEach((value, key) => {
+                    webUrl += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+                });
+                
+                // Add custom params
+                if (customParams) {
+                    const params = JSON.parse(customParams);
+                    Object.keys(params).forEach(key => {
+                        webUrl += `&${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`;
+                    });
+                }
+                
+                log(`Generated web link: ${webUrl}`, 'success');
+                
+                // Copy to clipboard if possible
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(webUrl).then(() => {
+                        log('Web link copied to clipboard', 'success');
+                    });
+                }
+                
+                // Open in new tab
+                window.open(webUrl, '_blank');
+                
+            } catch (e) {
+                log(`Error generating web link: ${e.message}`, 'error');
+            }
+        }
+        
+        // System status updates
+        function updateSystemStatus() {
+            // HTTPS Status
+            const httpsStatus = document.getElementById('https-status');
+            const httpsText = document.getElementById('https-text');
+            if (location.protocol === 'https:') {
+                httpsStatus.className = 'status-indicator online';
+                httpsText.textContent = 'Secure (HTTPS)';
+            } else {
+                httpsStatus.className = 'status-indicator offline';
+                httpsText.textContent = 'Not secure (HTTP)';
+            }
+            
+            // Platform
+            const platformStatus = document.getElementById('platform-status');
+            const platformText = document.getElementById('platform-text');
+            const platform = detectPlatform();
+            platformStatus.className = 'status-indicator online';
+            platformText.textContent = platform;
+            
+            // Browser
+            const browserStatus = document.getElementById('browser-status');
+            const browserText = document.getElementById('browser-text');
+            const browser = detectBrowser();
+            browserStatus.className = 'status-indicator online';
+            browserText.textContent = browser;
+            
+            // Deep Link Support
+            const deeplinkStatus = document.getElementById('deeplink-support-status');
+            const deeplinkText = document.getElementById('deeplink-support-text');
+            const isMobile = ['iOS', 'Android'].includes(platform);
+            if (isMobile && location.protocol === 'https:') {
+                deeplinkStatus.className = 'status-indicator online';
+                deeplinkText.textContent = 'Supported';
+            } else if (isMobile) {
+                deeplinkStatus.className = 'status-indicator offline';
+                deeplinkText.textContent = 'Requires HTTPS';
+            } else {
+                deeplinkStatus.className = 'status-indicator offline';
+                deeplinkText.textContent = 'Desktop (limited)';
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSystemStatus();
+            log('Deep Link Test Console initialized', 'success');
+            log(`Platform: ${detectPlatform()}, Browser: ${detectBrowser()}`, 'info');
+            log(`URL: ${location.href}`, 'info');
+        });
+    </script>
+</body>
+</html>

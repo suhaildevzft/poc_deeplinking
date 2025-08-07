@@ -1,0 +1,31 @@
+# GitHub Pages Jekyll configuration
+plugins:
+  - jekyll-redirect-from
+
+# Include files that start with dots
+include:
+  - ".well-known"
+  - ".nojekyll"
+
+# Don't process these files
+exclude:
+  - deeplink_poc/
+  - .github/
+  - README.md
+
+# Serve static files as-is
+defaults:
+  - scope:
+      path: ".well-known"
+    values:
+      layout: null
+      sitemap: false
+
+# GitHub Pages specific settings
+github:
+  repository_name: poc_deeplinking
+  repository_nwo: suhaildevzft/poc_deeplinking
+  owner_name: suhaildevzft
+  
+url: "https://suhaildevzft.github.io"
+baseurl: "/poc_deeplinking"

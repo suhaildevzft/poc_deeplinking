@@ -1,78 +1,453 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Redirecting...</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 50px;
-      background-color: #f5f5f5;
-      margin: 0;
-    }
-    .desktop-content {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .hidden { display: none !important; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Link POC - Open App</title>
+    
+    <!-- iOS Deep Link Meta Tags -->
+    <meta name="apple-itunes-app" content="app-id=6739358459">
+    <meta property="al:ios:app_store_id" content="6739358459">
+    <meta property="al:ios:app_name" content="Deep Link POC">
+    <meta property="al:ios:url" content="deeplinkpoc://example.com/dashboard">
+    
+    <!-- Android Deep Link Meta Tags -->
+    <meta property="al:android:package" content="app.slavic.customer.uat">
+    <meta property="al:android:app_name" content="Deep Link POC">
+    <meta property="al:android:url" content="deeplinkpoc://example.com/dashboard">
+    
+    <!-- Universal/Fallback Meta Tags -->
+    <meta property="al:web:url" content="https://ww2staging.slavic401k.com/participant-portal-uat/dashboard">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Deep Link POC">
+    <meta property="og:description" content="Open Deep Link POC app for better experience">
+    <meta property="og:image" content="https://via.placeholder.com/300x200?text=Deep+Link+POC">
+    <meta property="og:url" content="https://suhaildevzft.github.io/poc_deeplinking">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Deep Link POC">
+    <meta name="twitter:description" content="Open Deep Link POC app for better experience">
+    <meta name="twitter:image" content="https://via.placeholder.com/300x200?text=Deep+Link+POC">
+    
+    <!-- Smart App Banner for iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Deep Link POC">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .app-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .status {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .status.checking {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        
+        .status.installed {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.not-installed {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .debug-info {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #666;
+            text-align: left;
+        }
+        
+        .countdown {
+            font-size: 1.2rem;
+            color: #667eea;
+            margin: 1rem 0;
+        }
+    </style>
 </head>
 <body>
-  <div class="desktop-content" id="desktopContent">
-    <h1>🔗 Deep Link Redirect</h1>
-    <p>Redirecting to web dashboard...</p>
-    <p><strong>Mobile users:</strong> This page automatically redirects to the app or store.</p>
-    <p><strong>Desktop users:</strong> You'll be redirected to the web version.</p>
-  </div>
+    <div class="container">
+        <div class="app-icon">📱</div>
+        <h1>Deep Link POC</h1>
+        <p class="subtitle">Attempting to open the mobile app...</p>
+        
+        <div id="status" class="status checking">
+            <div class="spinner"></div>
+            Checking if app is installed...
+        </div>
+        
+        <div id="countdown" class="countdown hidden">
+            Redirecting in <span id="countdown-timer">3</span> seconds...
+        </div>
+        
+        <div id="actions" class="hidden">
+            <a href="#" id="open-app-btn" class="btn btn-primary">Open App</a>
+            <a href="#" id="download-btn" class="btn btn-secondary">Download App</a>
+            <a href="https://ww2staging.slavic401k.com/participant-portal-uat/dashboard" class="btn btn-secondary">Continue in Browser</a>
+        </div>
+        
+        <div class="debug-info">
+            <strong>Debug Information:</strong><br>
+            <span id="user-agent"></span><br>
+            <span id="platform"></span><br>
+            <span id="deep-link-url"></span>
+        </div>
+    </div>
 
-  <script>
-    (function() {
-      const userAgent = navigator.userAgent.toLowerCase();
-      const isIOS = /iphone|ipad|ipod/.test(userAgent);
-      const isAndroid = /android/.test(userAgent);
-      const isMobile = isIOS || isAndroid;
+    <script>
+        // Configuration
+        const CONFIG = {
+            deepLinkScheme: 'deeplinkpoc://example.com/dashboard',
+            iosAppStoreUrl: 'https://apps.apple.com/app/6739358459', // Replace with actual App Store URL
+            androidPlayStoreUrl: 'https://play.google.com/store/apps/details?id=app.slavic.customer.uat', // Replace with actual Play Store URL
+            webFallbackUrl: 'https://ww2staging.slavic401k.com/participant-portal-uat/dashboard',
+            appDetectionTimeout: 3000 // 3 seconds
+        };
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const paramString = urlParams.toString();
-
-      if (isMobile) {
-        document.body.style.display = 'none';
-
-        if (isIOS) {
-          // Use Universal Link (recommended, no prompt if configured correctly)
-          const universalLink = `https://suhaildevzft.github.io/poc_deeplinking/app/dashboard${paramString ? '?' + paramString : ''}`;
-          window.location.href = universalLink;
-
-          // Optional: fallback to App Store after delay
-          setTimeout(() => {
-            window.location.href = 'https://apps.apple.com/app/6739358459';
-          }, 2000);
-
-        } else if (isAndroid) {
-          // Use intent for Android
-          const intent = `intent://example.com/dashboard${paramString ? '?' + paramString : ''}#Intent;scheme=deeplinkpoc;package=app.slavic.customer.uat;end`;
-          window.location.href = intent;
-
-          // Fallback to Play Store
-          setTimeout(() => {
-            window.location.href = 'https://play.google.com/store/apps/details?id=app.slavic.customer.uat';
-          }, 2000);
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const customPath = urlParams.get('path') || 'dashboard';
+        const userId = urlParams.get('userId') || '';
+        const token = urlParams.get('token') || '';
+        
+        // Build deep link URL with parameters
+        let deepLinkUrl = `deeplinkpoc://example.com/${customPath}`;
+        const params = new URLSearchParams();
+        if (userId) params.append('userId', userId);
+        if (token) params.append('token', token);
+        if (params.toString()) {
+            deepLinkUrl += `?${params.toString()}`;
         }
 
-        return; // Stop further script
-      }
+        // UI Elements
+        const statusEl = document.getElementById('status');
+        const actionsEl = document.getElementById('actions');
+        const countdownEl = document.getElementById('countdown');
+        const countdownTimerEl = document.getElementById('countdown-timer');
+        const openAppBtn = document.getElementById('open-app-btn');
+        const downloadBtn = document.getElementById('download-btn');
 
-      // Desktop: redirect after showing message
-      setTimeout(() => {
-        window.location.href = 'https://ww2staging.slavic401k.com/participant-portal-uat/dashboard';
-      }, 3000);
-    })();
-  </script>
+        // Debug info
+        document.getElementById('user-agent').textContent = `User Agent: ${navigator.userAgent}`;
+        document.getElementById('platform').textContent = `Platform: ${navigator.platform}`;
+        document.getElementById('deep-link-url').textContent = `Deep Link: ${deepLinkUrl}`;
+
+        // Platform detection
+        function detectPlatform() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return 'ios';
+            } else if (/android/i.test(userAgent)) {
+                return 'android';
+            } else {
+                return 'web';
+            }
+        }
+
+        // Check if app is installed using various methods
+        function checkAppInstallation() {
+            const platform = detectPlatform();
+            
+            return new Promise((resolve) => {
+                if (platform === 'web') {
+                    // Desktop/web - assume app not installed
+                    resolve(false);
+                    return;
+                }
+
+                let appInstalled = false;
+                let timeoutReached = false;
+
+                // Method 1: Try to open the app and detect if we're still on the page
+                const startTime = Date.now();
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = deepLinkUrl;
+                document.body.appendChild(iframe);
+
+                // Method 2: Use visibility change detection
+                const handleVisibilityChange = () => {
+                    if (document.hidden) {
+                        appInstalled = true;
+                        cleanup();
+                        resolve(true);
+                    }
+                };
+
+                // Method 3: Use page focus detection
+                const handlePageFocus = () => {
+                    if (Date.now() - startTime > 1000) {
+                        appInstalled = true;
+                        cleanup();
+                        resolve(true);
+                    }
+                };
+
+                // Method 4: Timeout detection
+                const timeout = setTimeout(() => {
+                    timeoutReached = true;
+                    cleanup();
+                    resolve(appInstalled);
+                }, CONFIG.appDetectionTimeout);
+
+                // Method 5: Try custom URL scheme
+                const link = document.createElement('a');
+                link.href = deepLinkUrl;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                
+                // Add event listeners
+                document.addEventListener('visibilitychange', handleVisibilityChange);
+                window.addEventListener('pagehide', handlePageFocus);
+                window.addEventListener('blur', handlePageFocus);
+
+                // Try to trigger the deep link
+                try {
+                    link.click();
+                } catch (e) {
+                    console.log('Direct click failed, trying iframe method');
+                }
+
+                // Cleanup function
+                function cleanup() {
+                    clearTimeout(timeout);
+                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+                    window.removeEventListener('pagehide', handlePageFocus);
+                    window.removeEventListener('blur', handlePageFocus);
+                    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+                    if (link.parentNode) link.parentNode.removeChild(link);
+                }
+
+                // For iOS, try using window.location as fallback
+                if (platform === 'ios') {
+                    setTimeout(() => {
+                        if (!timeoutReached && !appInstalled) {
+                            window.location.href = deepLinkUrl;
+                        }
+                    }, 500);
+                }
+            });
+        }
+
+        // Update UI based on app installation status
+        function updateUI(isInstalled) {
+            const platform = detectPlatform();
+            
+            if (isInstalled) {
+                statusEl.className = 'status installed';
+                statusEl.innerHTML = '✅ App is installed! Opening now...';
+                
+                // Show countdown and redirect
+                countdownEl.classList.remove('hidden');
+                startCountdown(() => {
+                    window.location.href = deepLinkUrl;
+                });
+            } else {
+                statusEl.className = 'status not-installed';
+                statusEl.innerHTML = '❌ App not found. Please download from app store.';
+                
+                // Show action buttons
+                actionsEl.classList.remove('hidden');
+                
+                // Set up button actions
+                openAppBtn.href = deepLinkUrl;
+                openAppBtn.textContent = 'Try Opening App';
+                
+                if (platform === 'ios') {
+                    downloadBtn.href = CONFIG.iosAppStoreUrl;
+                    downloadBtn.textContent = 'Download from App Store';
+                } else if (platform === 'android') {
+                    downloadBtn.href = CONFIG.androidPlayStoreUrl;
+                    downloadBtn.textContent = 'Download from Play Store';
+                } else {
+                    downloadBtn.href = CONFIG.webFallbackUrl;
+                    downloadBtn.textContent = 'Continue in Browser';
+                }
+            }
+        }
+
+        // Countdown timer
+        function startCountdown(callback) {
+            let seconds = 3;
+            countdownTimerEl.textContent = seconds;
+            
+            const timer = setInterval(() => {
+                seconds--;
+                if (seconds > 0) {
+                    countdownTimerEl.textContent = seconds;
+                } else {
+                    clearInterval(timer);
+                    callback();
+                }
+            }, 1000);
+        }
+
+        // Smart banner for iOS
+        function addIOSSmartBanner() {
+            const platform = detectPlatform();
+            if (platform === 'ios') {
+                const smartBanner = document.createElement('meta');
+                smartBanner.name = 'apple-itunes-app';
+                smartBanner.content = `app-id=6739358459, app-argument=${encodeURIComponent(deepLinkUrl)}`;
+                document.head.appendChild(smartBanner);
+            }
+        }
+
+        // Initialize app detection
+        async function init() {
+            console.log('Starting app detection...');
+            console.log('Platform:', detectPlatform());
+            console.log('Deep link URL:', deepLinkUrl);
+            
+            // Add iOS smart banner
+            addIOSSmartBanner();
+            
+            try {
+                const isInstalled = await checkAppInstallation();
+                console.log('App installed:', isInstalled);
+                updateUI(isInstalled);
+            } catch (error) {
+                console.error('Error checking app installation:', error);
+                updateUI(false);
+            }
+        }
+
+        // Handle back button (in case user returns from app store)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Page was loaded from cache (user likely returned)
+                console.log('User returned to page');
+                updateUI(false);
+            }
+        });
+
+        // Start the detection process
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Fallback: try immediate redirect for some browsers
+        setTimeout(() => {
+            const platform = detectPlatform();
+            if (platform !== 'web') {
+                window.location.href = deepLinkUrl;
+            }
+        }, 1000);
+    </script>
 </body>
 </html>

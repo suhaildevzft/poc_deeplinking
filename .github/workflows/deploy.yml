@@ -33,8 +33,17 @@ jobs:
         run: |
           mkdir -p _site/.well-known
           mkdir -p _site/app/dashboard
+          
+          # Copy main website files
           cp index.html _site/
+          cp demo.html _site/
+          cp test-console.html _site/
+          cp .nojekyll _site/
+          
+          # Copy app directory for universal links
           cp app/dashboard/index.html _site/app/dashboard/
+          
+          # Copy well-known files for app associations
           cp .well-known/apple-app-site-association _site/.well-known/
           cp .well-known/assetlinks.json _site/.well-known/
           

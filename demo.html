@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Link POC - Demo Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .demo-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .code {
+            background: #f1f3f4;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        pre {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Deep Link POC - Demo Page</h1>
+    
+    <div class="warning">
+        <strong>⚠️ Note:</strong> For this demo to work properly, you need to:
+        <ul>
+            <li>Host this page on a web server (not file:// protocol)</li>
+            <li>Have the mobile app installed on your device</li>
+            <li>Access this page from a mobile device</li>
+        </ul>
+    </div>
+    
+    <div class="demo-section">
+        <h2>📱 Test Deep Links</h2>
+        <p>Click these buttons to test different deep link scenarios:</p>
+        
+        <a href="./index.html" class="btn">Basic Deep Link</a>
+        <a href="./index.html?path=dashboard&userId=123" class="btn">Deep Link with User ID</a>
+        <a href="./index.html?path=profile&userId=456&token=abc123" class="btn">Deep Link with Token</a>
+        <a href="./index.html?path=settings" class="btn">Deep Link to Settings</a>
+    </div>
+    
+    <div class="demo-section">
+        <h2>🔗 Direct App Links</h2>
+        <p>These links will attempt to open the app directly (may not work in all browsers):</p>
+        
+        <a href="deeplinkpoc://example.com/dashboard" class="btn">Custom Scheme Link</a>
+        <a href="https://suhaildevzft.github.io/poc_deeplinking/app/dashboard" class="btn">Universal Link</a>
+    </div>
+    
+    <div class="demo-section">
+        <h2>📋 How It Works</h2>
+        
+        <h3>1. HTML Meta Tags</h3>
+        <p>The main <span class="code">index.html</span> includes these important meta tags:</p>
+        <pre><code>&lt;!-- iOS Deep Link Meta Tags --&gt;
+&lt;meta name="apple-itunes-app" content="app-id=6739358459"&gt;
+&lt;meta property="al:ios:app_store_id" content="6739358459"&gt;
+&lt;meta property="al:ios:app_name" content="Deep Link POC"&gt;
+&lt;meta property="al:ios:url" content="deeplinkpoc://example.com/dashboard"&gt;
+
+&lt;!-- Android Deep Link Meta Tags --&gt;
+&lt;meta property="al:android:package" content="app.slavic.customer.uat"&gt;
+&lt;meta property="al:android:app_name" content="Deep Link POC"&gt;
+&lt;meta property="al:android:url" content="deeplinkpoc://example.com/dashboard"&gt;</code></pre>
+        
+        <h3>2. App Detection Logic</h3>
+        <p>The JavaScript code uses multiple methods to detect if the app is installed:</p>
+        <ul>
+            <li><strong>Visibility Change:</strong> Detects when the page becomes hidden (app opens)</li>
+            <li><strong>Page Blur:</strong> Detects when the page loses focus</li>
+            <li><strong>Timeout Method:</strong> If app doesn't open within 3 seconds, assumes not installed</li>
+            <li><strong>Custom URL Scheme:</strong> Attempts to open the app using custom scheme</li>
+        </ul>
+        
+        <h3>3. Smart Fallbacks</h3>
+        <p>If app is not detected:</p>
+        <ul>
+            <li>iOS users are redirected to App Store</li>
+            <li>Android users are redirected to Play Store</li>
+            <li>Web users continue in browser</li>
+        </ul>
+    </div>
+    
+    <div class="demo-section">
+        <h2>🛠️ Configuration</h2>
+        <p>To customize the deep linking behavior, update these configuration values in <span class="code">index.html</span>:</p>
+        <pre><code>const CONFIG = {
+    deepLinkScheme: 'deeplinkpoc://example.com/dashboard',
+    iosAppStoreUrl: 'https://apps.apple.com/app/id6739358459',
+    androidPlayStoreUrl: 'https://play.google.com/store/apps/details?id=app.slavic.customer.uat',
+    webFallbackUrl: 'https://ww2staging.slavic401k.com/participant-portal-uat/dashboard',
+    appDetectionTimeout: 3000
+};</code></pre>
+    </div>
+    
+    <div class="demo-section">
+        <h2>📱 Mobile App Configuration</h2>
+        
+        <h3>Android (AndroidManifest.xml)</h3>
+        <pre><code>&lt;intent-filter android:autoVerify="true"&gt;
+    &lt;action android:name="android.intent.action.VIEW" /&gt;
+    &lt;category android:name="android.intent.category.DEFAULT" /&gt;
+    &lt;category android:name="android.intent.category.BROWSABLE" /&gt;
+    &lt;data android:scheme="deeplinkpoc" /&gt;
+&lt;/intent-filter&gt;</code></pre>
+        
+        <h3>iOS (Info.plist)</h3>
+        <pre><code>&lt;key&gt;CFBundleURLTypes&lt;/key&gt;
+&lt;array&gt;
+    &lt;dict&gt;
+        &lt;key&gt;CFBundleURLName&lt;/key&gt;
+        &lt;string&gt;deeplinkpoc.deeplink&lt;/string&gt;
+        &lt;key&gt;CFBundleURLSchemes&lt;/key&gt;
+        &lt;array&gt;
+            &lt;string&gt;deeplinkpoc&lt;/string&gt;
+        &lt;/array&gt;
+    &lt;/dict&gt;
+&lt;/array&gt;</code></pre>
+    </div>
+    
+    <div class="demo-section">
+        <h2>🧪 Testing Checklist</h2>
+        <ul>
+            <li>✅ Test on iOS Safari</li>
+            <li>✅ Test on Android Chrome</li>
+            <li>✅ Test with app installed</li>
+            <li>✅ Test with app not installed</li>
+            <li>✅ Test custom scheme links</li>
+            <li>✅ Test universal links</li>
+            <li>✅ Test URL parameters</li>
+            <li>✅ Test fallback to web</li>
+        </ul>
+    </div>
+    
+    <footer style="text-align: center; margin-top: 3rem; color: #666;">
+        <p>Deep Link POC Demo - Built with ❤️ for mobile app integration</p>
+    </footer>
+</body>
+</html>
