@@ -1,83 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting...</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-            background-color: #f5f5f5;
-            margin: 0;
-        }
-        .desktop-content {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .hidden { display: none !important; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+      background-color: #f5f5f5;
+      margin: 0;
+    }
+    .desktop-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .hidden { display: none !important; }
+  </style>
 </head>
 <body>
-    <!-- This content only shows on desktop -->
-    <div class="desktop-content" id="desktopContent">
-        <h1>🔗 Deep Link Redirect</h1>
-        <p>Redirecting to web dashboard...</p>
-        <p><strong>Mobile users:</strong> This page automatically redirects to the app or store.</p>
-        <p><strong>Desktop users:</strong> You'll be redirected to the web version.</p>
-    </div>
+  <div class="desktop-content" id="desktopContent">
+    <h1>🔗 Deep Link Redirect</h1>
+    <p>Redirecting to web dashboard...</p>
+    <p><strong>Mobile users:</strong> This page automatically redirects to the app or store.</p>
+    <p><strong>Desktop users:</strong> You'll be redirected to the web version.</p>
+  </div>
 
-    <script>
-        // Immediate execution - no delays
-        (function() {
-            const userAgent = navigator.userAgent.toLowerCase();
-            const isIOS = /iphone|ipad|ipod/.test(userAgent);
-            const isAndroid = /android/.test(userAgent);
-            const isMobile = isIOS || isAndroid;
-            
-            // If mobile, hide all content and redirect immediately
-            if (isMobile) {
-                document.body.style.display = 'none';
-                
-                // Get URL parameters to pass along
-                const urlParams = new URLSearchParams(window.location.search);
-                const paramString = urlParams.toString();
-                
-                if (isIOS) {
-                    // iOS: Try Universal Link first, then App Store
-                    const universalLink = `https://suhaildevzft.github.io/poc_deeplinking/app/dashboard${paramString ? '?' + paramString : ''}`;
-                    window.location.replace(universalLink);
-                    
-                    // Fallback to App Store after 2 seconds
-                    setTimeout(() => {
-                        window.location.replace('https://apps.apple.com/app/6739358459');
-                    }, 2000);
-                    
-                } else if (isAndroid) {
-                    // Android: Try Intent first, then Play Store
-                    const intent = `intent://example.com/dashboard${paramString ? '?' + paramString : ''}#Intent;scheme=deeplinkpoc;package=app.slavic.customer.uat;end`;
-                    window.location.replace(intent);
-                    
-                    // Fallback to Play Store after 2 seconds
-                    setTimeout(() => {
-                        window.location.replace('https://play.google.com/store/apps/details?id=app.slavic.customer.uat');
-                    }, 2000);
-                }
-                
-                // Stop execution for mobile
-                return;
-            }
-            
-            // Desktop: Show content and redirect to web after 3 seconds
-            setTimeout(() => {
-                window.location.replace('https://ww2staging.slavic401k.com/participant-portal-uat/dashboard');
-            }, 3000);
-        })();
-    </script>
+  <script>
+    (function() {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isIOS = /iphone|ipad|ipod/.test(userAgent);
+      const isAndroid = /android/.test(userAgent);
+      const isMobile = isIOS || isAndroid;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramString = urlParams.toString();
+
+      if (isMobile) {
+        document.body.style.display = 'none';
+
+        if (isIOS) {
+          // Use Universal Link (recommended, no prompt if configured correctly)
+          const universalLink = `https://suhaildevzft.github.io/poc_deeplinking/app/dashboard${paramString ? '?' + paramString : ''}`;
+          window.location.href = universalLink;
+
+          // Optional: fallback to App Store after delay
+          setTimeout(() => {
+            window.location.href = 'https://apps.apple.com/app/6739358459';
+          }, 2000);
+
+        } else if (isAndroid) {
+          // Use intent for Android
+          const intent = `intent://example.com/dashboard${paramString ? '?' + paramString : ''}#Intent;scheme=deeplinkpoc;package=app.slavic.customer.uat;end`;
+          window.location.href = intent;
+
+          // Fallback to Play Store
+          setTimeout(() => {
+            window.location.href = 'https://play.google.com/store/apps/details?id=app.slavic.customer.uat';
+          }, 2000);
+        }
+
+        return; // Stop further script
+      }
+
+      // Desktop: redirect after showing message
+      setTimeout(() => {
+        window.location.href = 'https://ww2staging.slavic401k.com/participant-portal-uat/dashboard';
+      }, 3000);
+    })();
+  </script>
 </body>
 </html>
