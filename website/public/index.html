@@ -1,89 +1,357 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
-
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.0.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.0.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.0.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.0.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.0.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.0.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.0.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.0.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.0.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.0.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Link Handler - POC</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .secondary-button {
+            background-color: #6c757d;
+        }
+        .secondary-button:hover {
+            background-color: #545b62;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .platform-info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #007bff;
+        }
+        #countdown {
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+        }
     </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 Deep Link Handler POC</h1>
+        <p>This page demonstrates deep linking functionality for mobile apps.</p>
+        
+        <div class="platform-info">
+            <h3>🔍 Platform Detection</h3>
+            <p><strong>Platform:</strong> <span id="platform">Detecting...</span></p>
+            <p><strong>User Agent:</strong> <span id="userAgent">Loading...</span></p>
+        </div>
+
+        <div id="status" class="status info">
+            <span id="statusText">Analyzing platform and preparing deep link...</span>
+        </div>
+
+        <div id="actions" style="display: none;">
+            <h3>📱 Available Actions</h3>
+            
+            <!-- Mobile-specific buttons -->
+            <div id="mobileActions" style="display: none;">
+                <a href="#" id="openAppButton" class="button">📱 Open App</a>
+                <a href="#" id="appStoreButton" class="button secondary-button">🏪 Get App from Store</a>
+            </div>
+            
+            <!-- Desktop fallback -->
+            <div id="desktopActions" style="display: none;">
+                <a href="https://ww2staging.slavic401k.com/participant-portal-uat/dashboard" 
+                   class="button" target="_blank">🖥️ Open Web Dashboard</a>
+            </div>
+        </div>
+
+        <div id="autoRedirect" style="display: none;">
+            <h3>⏰ Auto-redirect</h3>
+            <p>Automatically redirecting in <span id="countdown">3</span> seconds...</p>
+            <a href="#" id="cancelRedirect" class="button secondary-button">Cancel</a>
+        </div>
+
+        <div class="container" style="margin-top: 30px;">
+            <h3>🧪 Manual Testing</h3>
+            <p>Use these buttons to manually test different scenarios:</p>
+            
+            <a href="deeplinkpoc://example.com/dashboard?userId=123&source=website" 
+               class="button">Test Custom Scheme</a>
+            
+            <a href="https://your-domain.com/app/dashboard?userId=123&source=website" 
+               class="button">Test Universal Link</a>
+            
+            <a href="https://ww2staging.slavic401k.com/participant-portal-uat/dashboard" 
+               class="button secondary-button" target="_blank">Web Fallback</a>
+        </div>
+
+        <div class="container" style="margin-top: 30px;">
+            <h3>📋 URL Parameters</h3>
+            <div id="urlParams">No parameters found</div>
+        </div>
+
+        <div class="container" style="margin-top: 30px; font-size: 14px; color: #666;">
+            <p>🔗 <strong>GitHub Pages URL:</strong> <span id="currentUrl"></span></p>
+            <p>📱 <strong>QR Code:</strong> Scan with mobile device to test deep linking</p>
+            <div id="qrCode" style="margin: 15px 0;"></div>
+        </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        // Platform detection
+        function detectPlatform() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const platform = navigator.platform.toLowerCase();
+            
+            if (/iphone|ipad|ipod/.test(userAgent)) {
+                return 'ios';
+            } else if (/android/.test(userAgent)) {
+                return 'android';
+            } else if (/windows/.test(platform)) {
+                return 'windows';
+            } else if (/mac/.test(platform)) {
+                return 'macos';
+            } else if (/linux/.test(platform)) {
+                return 'linux';
+            } else {
+                return 'unknown';
+            }
         }
-      });
+
+        function isMobile() {
+            const platform = detectPlatform();
+            return platform === 'ios' || platform === 'android';
+        }
+
+        // Deep link URLs
+        const DEEP_LINK_SCHEME = 'deeplinkpoc://example.com/dashboard';
+        const UNIVERSAL_LINK = 'https://your-domain.com/app/dashboard';
+        const IOS_APP_STORE = 'https://apps.apple.com/app/6739358459';
+        const ANDROID_PLAY_STORE = 'https://play.google.com/store/apps/details?id=app.slavic401k.mobileapp.participant';
+        const WEB_FALLBACK = 'https://ww2staging.slavic401k.com/participant-portal-uat/dashboard';
+
+        // Update UI with platform information
+        function updatePlatformInfo() {
+            const platform = detectPlatform();
+            const userAgent = navigator.userAgent;
+            
+            document.getElementById('platform').textContent = platform.charAt(0).toUpperCase() + platform.slice(1);
+            document.getElementById('userAgent').textContent = userAgent;
+        }
+
+        // Parse URL parameters
+        function parseUrlParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paramsDiv = document.getElementById('urlParams');
+            
+            if (urlParams.toString()) {
+                let paramsList = '<ul style="text-align: left;">';
+                for (const [key, value] of urlParams) {
+                    paramsList += `<li><strong>${key}:</strong> ${value}</li>`;
+                }
+                paramsList += '</ul>';
+                paramsDiv.innerHTML = paramsList;
+            } else {
+                paramsDiv.textContent = 'No parameters found';
+            }
+        }
+
+        // Attempt to open the app
+        function attemptAppOpen() {
+            const platform = detectPlatform();
+            let deepLinkUrl = DEEP_LINK_SCHEME;
+            
+            // Add current URL parameters to deep link
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.toString()) {
+                deepLinkUrl += '?' + urlParams.toString();
+            }
+            
+            // Try to open the app
+            window.location.href = deepLinkUrl;
+            
+            // Fallback to app store after a delay
+            setTimeout(() => {
+                if (platform === 'ios') {
+                    window.location.href = IOS_APP_STORE;
+                } else if (platform === 'android') {
+                    window.location.href = ANDROID_PLAY_STORE;
+                }
+            }, 2000);
+        }
+
+        // Auto-redirect countdown
+        function startAutoRedirect() {
+            let countdown = 3;
+            const countdownElement = document.getElementById('countdown');
+            const autoRedirectDiv = document.getElementById('autoRedirect');
+            
+            autoRedirectDiv.style.display = 'block';
+            
+            const timer = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    attemptAppOpen();
+                }
+            }, 1000);
+            
+            // Cancel redirect button
+            document.getElementById('cancelRedirect').onclick = function() {
+                clearInterval(timer);
+                autoRedirectDiv.style.display = 'none';
+                showManualActions();
+            };
+        }
+
+        // Show manual actions
+        function showManualActions() {
+            const actionsDiv = document.getElementById('actions');
+            const mobileActionsDiv = document.getElementById('mobileActions');
+            const desktopActionsDiv = document.getElementById('desktopActions');
+            
+            actionsDiv.style.display = 'block';
+            
+            if (isMobile()) {
+                mobileActionsDiv.style.display = 'block';
+                
+                // Set up mobile action buttons
+                document.getElementById('openAppButton').onclick = function(e) {
+                    e.preventDefault();
+                    attemptAppOpen();
+                };
+                
+                const platform = detectPlatform();
+                const appStoreButton = document.getElementById('appStoreButton');
+                if (platform === 'ios') {
+                    appStoreButton.href = IOS_APP_STORE;
+                    appStoreButton.textContent = '🍎 Get from App Store';
+                } else {
+                    appStoreButton.href = ANDROID_PLAY_STORE;
+                    appStoreButton.textContent = '🤖 Get from Play Store';
+                }
+            } else {
+                desktopActionsDiv.style.display = 'block';
+            }
+        }
+
+        // Auto-redirect countdown for desktop
+        function startDesktopRedirect() {
+            let countdown = 3;
+            const statusDiv = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            
+            statusText.innerHTML = `Desktop platform detected. Redirecting to web dashboard in <span style="color: #007bff; font-weight: bold;">${countdown}</span> seconds...`;
+            
+            const timer = setInterval(() => {
+                countdown--;
+                statusText.innerHTML = `Desktop platform detected. Redirecting to web dashboard in <span style="color: #007bff; font-weight: bold;">${countdown}</span> seconds...`;
+                
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    statusText.textContent = 'Redirecting to web dashboard...';
+                    window.location.href = WEB_FALLBACK;
+                }
+            }, 1000);
+        }
+
+        // Initialize page
+        function initialize() {
+            updatePlatformInfo();
+            parseUrlParameters();
+            updateCurrentUrl();
+            
+            const statusDiv = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            
+            if (isMobile()) {
+                statusText.textContent = 'Mobile platform detected. Preparing app launch...';
+                statusDiv.className = 'status success';
+                
+                // Auto-redirect for mobile
+                setTimeout(() => {
+                    startAutoRedirect();
+                }, 1000);
+            } else {
+                // Desktop platform - auto-redirect to web fallback
+                statusDiv.className = 'status info';
+                startDesktopRedirect();
+            }
+        }
+
+        // Update current URL display
+        function updateCurrentUrl() {
+            const currentUrlElement = document.getElementById('currentUrl');
+            if (currentUrlElement) {
+                currentUrlElement.textContent = window.location.href;
+                
+                // Generate simple QR code placeholder
+                const qrCodeDiv = document.getElementById('qrCode');
+                if (qrCodeDiv) {
+                    qrCodeDiv.innerHTML = `
+                        <div style="border: 2px dashed #ccc; padding: 20px; background: #f9f9f9;">
+                            📱 Use a QR code generator with this URL:<br>
+                            <code style="word-break: break-all;">${window.location.href}</code>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Run when page loads
+        document.addEventListener('DOMContentLoaded', initialize);
+
+        // Handle page visibility change (for detecting app switch)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                console.log('Page hidden - app might have opened');
+            } else {
+                console.log('Page visible - user returned to browser');
+            }
+        });
     </script>
-  </body>
+</body>
 </html>
