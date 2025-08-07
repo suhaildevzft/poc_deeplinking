@@ -1,4 +1,4 @@
-package com.example.deeplink_poc
+package app.slavic.customer.uat
 
 import io.flutter.embedding.android.FlutterActivity
 
