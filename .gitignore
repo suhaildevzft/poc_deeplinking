@@ -1,0 +1,17 @@
+# General
+.DS_Store
+.vscode/
+*.log
+
+# Flutter/Dart
+deeplink_poc/build/
+deeplink_poc/.dart_tool/
+deeplink_poc/.packages
+deeplink_poc/pubspec.lock
+
+# GitHub Pages
+_site/
+
+# Local development
+*.local
+.env
