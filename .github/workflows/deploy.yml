@@ -33,13 +33,18 @@ jobs:
         run: |
           mkdir -p _site/.well-known
           mkdir -p _site/app/dashboard
-          cp website/index.html _site/
+          cp index.html _site/
           cp app/dashboard/index.html _site/app/dashboard/
           cp .well-known/apple-app-site-association _site/.well-known/
           cp .well-known/assetlinks.json _site/.well-known/
           
-          # Update the website to use the GitHub Pages URL (optional, for future use)
-          # sed -i 's/localhost:8000/${{ github.repository_owner }}.github.io\/${{ github.event.repository.name }}/g' _site/index.html
+          # Verify files were copied
+          echo "Files in _site:"
+          ls -la _site/
+          echo "Files in _site/.well-known:"
+          ls -la _site/.well-known/
+          echo "Files in _site/app/dashboard:"
+          ls -la _site/app/dashboard/
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
