@@ -3,400 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real Deep Linking - Like Flipkart & YouTube!</title>
-    
-    <!-- Preload app links for faster redirection -->
-    <link rel="prefetch" href="deeplinkpoc://">
-    <link rel="prefetch" href="https://suhaildevzft.github.io/poc_deeplinking/app/dashboard">
+    <title>Redirecting...</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
             text-align: center;
+            padding: 50px;
             background-color: #f5f5f5;
+            margin: 0;
         }
-        .container {
+        .desktop-content {
             background: white;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin: 20px 0;
+            max-width: 600px;
+            margin: 0 auto;
         }
-        .button {
-            display: inline-block;
-            background-color: #007bff;
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 5px;
-            margin: 10px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
-        .secondary-button {
-            background-color: #6c757d;
-        }
-        .secondary-button:hover {
-            background-color: #545b62;
-        }
-        .status {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .warning {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        .platform-info {
-            background-color: #e7f3ff;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px 0;
-            border-left: 4px solid #007bff;
-        }
-        #countdown {
-            font-size: 18px;
-            font-weight: bold;
-            color: #007bff;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
-    <div class="container" id="mobileLoader" style="display: none;">
-        <h1>🚀 Opening App...</h1>
-        <div style="display: inline-block; width: 20px; height: 20px; border: 2px solid #f3f3f3; border-top: 2px solid #007bff; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px;"></div>
-        <p>Please wait while we redirect you to the app...</p>
-    </div>
-
-    <div class="container" id="desktopContent">
-        <h1>🔗 Real-World Deep Linking (Like Flipkart!)</h1>
-        <p>Experience how big apps <strong>actually</strong> handle deep linking - no magic detection, just smart UX!</p>
-        
-        <div class="platform-info">
-            <h3>🔍 Platform Detection</h3>
-            <p><strong>Platform:</strong> <span id="platform">Detecting...</span></p>
-            <p><strong>User Agent:</strong> <span id="userAgent">Loading...</span></p>
-        </div>
-
-        <div id="status" class="status info">
-            <span id="statusText">Analyzing platform and checking app installation...</span>
-        </div>
-
-        <div id="actions" style="display: none;">
-            <h3>📱 Available Actions</h3>
-            
-            <!-- Mobile-specific buttons -->
-            <div id="mobileActions" style="display: none;">
-                <a href="#" id="openAppButton" class="button">📱 Open App</a>
-                <a href="#" id="appStoreButton" class="button secondary-button">🏪 Get App from Store</a>
-            </div>
-            
-            <!-- Desktop fallback -->
-            <div id="desktopActions" style="display: none;">
-                <a href="https://ww2staging.slavic401k.com/participant-portal-uat/dashboard" 
-                   class="button" target="_blank">🖥️ Open Web Dashboard</a>
-            </div>
-        </div>
-
-        <div id="autoRedirect" style="display: none;">
-            <h3>⏰ Auto-redirect</h3>
-            <p>Automatically redirecting in <span id="countdown">3</span> seconds...</p>
-            <a href="#" id="cancelRedirect" class="button secondary-button">Cancel</a>
-        </div>
-
-        <div class="container" style="margin-top: 30px;">
-            <h3>🧪 Manual Testing</h3>
-            <p>Use these buttons to manually test different scenarios:</p>
-            
-            <a href="deeplinkpoc://example.com/dashboard?userId=123&source=website" 
-               class="button">Test Custom Scheme</a>
-            
-            <a href="https://suhaildevzft.github.io/poc_deeplinking/app/dashboard?userId=123&source=website" 
-               class="button">Test Universal Link</a>
-            
-            <a href="https://ww2staging.slavic401k.com/participant-portal-uat/dashboard" 
-               class="button secondary-button" target="_blank">Web Fallback</a>
-        </div>
-
-        <div class="container" style="margin-top: 30px;">
-            <h3>📋 URL Parameters</h3>
-            <div id="urlParams">No parameters found</div>
-        </div>
-
-        <div class="container" style="margin-top: 30px; font-size: 14px; color: #666;">
-            <p>🔗 <strong>GitHub Pages URL:</strong> <span id="currentUrl"></span></p>
-            <p>📱 <strong>QR Code:</strong> Scan with mobile device to test deep linking</p>
-            <div id="qrCode" style="margin: 15px 0;"></div>
-        </div>
+    <!-- This content only shows on desktop -->
+    <div class="desktop-content" id="desktopContent">
+        <h1>🔗 Deep Link Redirect</h1>
+        <p>Redirecting to web dashboard...</p>
+        <p><strong>Mobile users:</strong> This page automatically redirects to the app or store.</p>
+        <p><strong>Desktop users:</strong> You'll be redirected to the web version.</p>
     </div>
 
     <script>
-        // Platform detection
-        function detectPlatform() {
+        // Immediate execution - no delays
+        (function() {
             const userAgent = navigator.userAgent.toLowerCase();
-            const platform = navigator.platform.toLowerCase();
+            const isIOS = /iphone|ipad|ipod/.test(userAgent);
+            const isAndroid = /android/.test(userAgent);
+            const isMobile = isIOS || isAndroid;
             
-            if (/iphone|ipad|ipod/.test(userAgent)) {
-                return 'ios';
-            } else if (/android/.test(userAgent)) {
-                return 'android';
-            } else if (/windows/.test(platform)) {
-                return 'windows';
-            } else if (/mac/.test(platform)) {
-                return 'macos';
-            } else if (/linux/.test(platform)) {
-                return 'linux';
-            } else {
-                return 'unknown';
-            }
-        }
-
-        function isMobile() {
-            const platform = detectPlatform();
-            return platform === 'ios' || platform === 'android';
-        }
-
-        // Deep link URLs
-        const DEEP_LINK_SCHEME = 'deeplinkpoc://example.com/dashboard';
-        const UNIVERSAL_LINK = 'https://suhaildevzft.github.io/poc_deeplinking/app/dashboard';
-        const IOS_APP_STORE = 'https://apps.apple.com/app/6739358459';
-        const ANDROID_PLAY_STORE = 'https://play.google.com/store/apps/details?id=app.slavic.customer.uat';
-        const WEB_FALLBACK = 'https://ww2staging.slavic401k.com/participant-portal-uat/dashboard';
-
-        // Update UI with platform information
-        function updatePlatformInfo() {
-            const platform = detectPlatform();
-            const userAgent = navigator.userAgent;
-            
-            document.getElementById('platform').textContent = platform.charAt(0).toUpperCase() + platform.slice(1);
-            document.getElementById('userAgent').textContent = userAgent;
-        }
-
-        // Parse URL parameters
-        function parseUrlParameters() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const paramsDiv = document.getElementById('urlParams');
-            
-            if (urlParams.toString()) {
-                let paramsList = '<ul style="text-align: left;">';
-                for (const [key, value] of urlParams) {
-                    paramsList += `<li><strong>${key}:</strong> ${value}</li>`;
+            // If mobile, hide all content and redirect immediately
+            if (isMobile) {
+                document.body.style.display = 'none';
+                
+                // Get URL parameters to pass along
+                const urlParams = new URLSearchParams(window.location.search);
+                const paramString = urlParams.toString();
+                
+                if (isIOS) {
+                    // iOS: Try Universal Link first, then App Store
+                    const universalLink = `https://suhaildevzft.github.io/poc_deeplinking/app/dashboard${paramString ? '?' + paramString : ''}`;
+                    window.location.replace(universalLink);
+                    
+                    // Fallback to App Store after 2 seconds
+                    setTimeout(() => {
+                        window.location.replace('https://apps.apple.com/app/6739358459');
+                    }, 2000);
+                    
+                } else if (isAndroid) {
+                    // Android: Try Intent first, then Play Store
+                    const intent = `intent://example.com/dashboard${paramString ? '?' + paramString : ''}#Intent;scheme=deeplinkpoc;package=app.slavic.customer.uat;end`;
+                    window.location.replace(intent);
+                    
+                    // Fallback to Play Store after 2 seconds
+                    setTimeout(() => {
+                        window.location.replace('https://play.google.com/store/apps/details?id=app.slavic.customer.uat');
+                    }, 2000);
                 }
-                paramsList += '</ul>';
-                paramsDiv.innerHTML = paramsList;
-            } else {
-                paramsDiv.textContent = 'No parameters found';
-            }
-        }
-
-        // Check if app is installed and attempt to open it
-        function attemptAppOpen() {
-            const platform = detectPlatform();
-            let deepLinkUrl = DEEP_LINK_SCHEME;
-            
-            // Add current URL parameters to deep link
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.toString()) {
-                deepLinkUrl += '?' + urlParams.toString();
-            }
-            
-            // For iOS - immediate Universal Link redirect
-            if (platform === 'ios') {
-                const universalUrl = `https://suhaildevzft.github.io/poc_deeplinking/app/dashboard${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
-                window.location.replace(universalUrl);
+                
+                // Stop execution for mobile
                 return;
             }
             
-            // For Android - try intent first, then Universal Link
-            if (platform === 'android') {
-                // Try Android Intent first
-                const intent = `intent://example.com/dashboard${urlParams.toString() ? '?' + urlParams.toString() : ''}#Intent;scheme=deeplinkpoc;package=app.slavic.customer.uat;end`;
-                window.location.replace(intent);
-                
-                // Backup Universal Link after short delay
-                setTimeout(() => {
-                    const universalUrl = `https://suhaildevzft.github.io/poc_deeplinking/app/dashboard${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
-                    window.location.replace(universalUrl);
-                }, 300);
-                
-                return;
-            }
-            
-            // For other platforms, redirect to web fallback immediately
-            window.location.replace(WEB_FALLBACK);
-        }
-        
-        // Redirect to appropriate app store
-        function redirectToStore(platform) {
-            if (platform === 'ios') {
-                window.location.href = IOS_APP_STORE;
-            } else if (platform === 'android') {
-                window.location.href = ANDROID_PLAY_STORE;
-            } else {
-                // For desktop, redirect to web fallback
-                window.location.href = WEB_FALLBACK;
-            }
-        }
-
-        // Auto-redirect countdown
-        function startAutoRedirect() {
-            let countdown = 3;
-            const countdownElement = document.getElementById('countdown');
-            const autoRedirectDiv = document.getElementById('autoRedirect');
-            const statusText = document.getElementById('statusText');
-            
-            autoRedirectDiv.style.display = 'block';
-            statusText.textContent = 'Checking if app is installed and preparing smart redirect...';
-            
-            const timer = setInterval(() => {
-                countdown--;
-                countdownElement.textContent = countdown;
-                
-                if (countdown <= 0) {
-                    clearInterval(timer);
-                    statusText.textContent = 'Attempting to open app...';
-                    attemptAppOpen();
-                }
-            }, 1000);
-            
-            // Cancel redirect button
-            document.getElementById('cancelRedirect').onclick = function() {
-                clearInterval(timer);
-                autoRedirectDiv.style.display = 'none';
-                showManualActions();
-            };
-        }
-
-        // Show manual actions
-        function showManualActions() {
-            const actionsDiv = document.getElementById('actions');
-            const mobileActionsDiv = document.getElementById('mobileActions');
-            const desktopActionsDiv = document.getElementById('desktopActions');
-            
-            actionsDiv.style.display = 'block';
-            
-            if (isMobile()) {
-                mobileActionsDiv.style.display = 'block';
-                
-                // Set up mobile action buttons
-                document.getElementById('openAppButton').onclick = function(e) {
-                    e.preventDefault();
-                    attemptAppOpen();
-                };
-                
-                const platform = detectPlatform();
-                const appStoreButton = document.getElementById('appStoreButton');
-                if (platform === 'ios') {
-                    appStoreButton.href = IOS_APP_STORE;
-                    appStoreButton.textContent = '🍎 Get from App Store';
-                } else {
-                    appStoreButton.href = ANDROID_PLAY_STORE;
-                    appStoreButton.textContent = '🤖 Get from Play Store';
-                }
-            } else {
-                desktopActionsDiv.style.display = 'block';
-            }
-        }
-
-        // Auto-redirect countdown for desktop
-        function startDesktopRedirect() {
-            let countdown = 3;
-            const statusDiv = document.getElementById('status');
-            const statusText = document.getElementById('statusText');
-            
-            statusText.innerHTML = `Desktop platform detected. Redirecting to web dashboard in <span style="color: #007bff; font-weight: bold;">${countdown}</span> seconds...`;
-            
-            const timer = setInterval(() => {
-                countdown--;
-                statusText.innerHTML = `Desktop platform detected. Redirecting to web dashboard in <span style="color: #007bff; font-weight: bold;">${countdown}</span> seconds...`;
-                
-                if (countdown <= 0) {
-                    clearInterval(timer);
-                    statusText.textContent = 'Redirecting to web dashboard...';
-                    window.location.href = WEB_FALLBACK;
-                }
-            }, 1000);
-        }
-
-        // Initialize page
-        function initialize() {
-            // For mobile - immediate redirect without showing any UI
-            if (isMobile()) {
-                // Hide desktop content and show minimal loader
-                document.getElementById('desktopContent').style.display = 'none';
-                document.getElementById('mobileLoader').style.display = 'block';
-                
-                // Attempt app open immediately
-                setTimeout(() => {
-                    attemptAppOpen();
-                }, 50); // Minimal delay to show loader briefly
-                return;
-            }
-            
-            // For desktop - show UI and redirect
-            document.getElementById('mobileLoader').style.display = 'none';
-            updatePlatformInfo();
-            parseUrlParameters();
-            updateCurrentUrl();
-            
-            const statusDiv = document.getElementById('status');
-            const statusText = document.getElementById('statusText');
-            statusDiv.className = 'status info';
-            startDesktopRedirect();
-        }
-
-        // Update current URL display
-        function updateCurrentUrl() {
-            const currentUrlElement = document.getElementById('currentUrl');
-            if (currentUrlElement) {
-                currentUrlElement.textContent = window.location.href;
-                
-                // Generate simple QR code placeholder
-                const qrCodeDiv = document.getElementById('qrCode');
-                if (qrCodeDiv) {
-                    qrCodeDiv.innerHTML = `
-                        <div style="border: 2px dashed #ccc; padding: 20px; background: #f9f9f9;">
-                            📱 Use a QR code generator with this URL:<br>
-                            <code style="word-break: break-all;">${window.location.href}</code>
-                        </div>
-                    `;
-                }
-            }
-        }
-
-        // Run when page loads
-        document.addEventListener('DOMContentLoaded', initialize);
-
-        // Global visibility change handler (for general logging)
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) {
-                console.log('Page hidden - user may have switched to app');
-            } else {
-                console.log('Page visible - user returned to browser');
-            }
-        });
+            // Desktop: Show content and redirect to web after 3 seconds
+            setTimeout(() => {
+                window.location.replace('https://ww2staging.slavic401k.com/participant-portal-uat/dashboard');
+            }, 3000);
+        })();
     </script>
 </body>
 </html>
